@@ -89,11 +89,38 @@ public class PetDatabase {
     }
     
     private static void searchPetsByName() {
-       System.out.println("The searchPetsByName() method has not been implemented yet");
+        String searchString;
+        int[] displayRows = new int[petCount];
+        int matchingRows = 0;
+        
+        System.out.print("Enter a name to search: ");
+        searchString = s.next();
+        
+        printTableHeader();
+        for (int x=0; x < petCount; x++) {
+            if (searchString.toLowerCase().matches(pets[x].getName().toLowerCase())) {
+                printTableRow(x, pets[x].getName(), pets[x].getAge()); 
+                matchingRows++;
+            }
+        }
+        printTableFooter(matchingRows);
     }
     
     private static void searchPetsByAge() {
-       System.out.println("The searchPetsByAge() method has not been implemented yet");
+        int searchNumber;
+        int[] displayRows = new int[petCount];
+        int matchingRows = 0;
+        System.out.print("Enter age to search: ");
+        searchNumber = s.nextInt();
+        printTableHeader();
+        for (int x=0; x < petCount; x++) {
+            if (searchNumber == pets[x].getAge()) {
+                printTableRow(x, pets[x].getName(), pets[x].getAge()); 
+                matchingRows++;
+            }
+        }
+        printTableFooter(matchingRows);
+        
     }
     
     private static void printTableHeader() {
