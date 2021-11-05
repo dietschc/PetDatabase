@@ -81,11 +81,54 @@ public class PetDatabase {
     }
     
     private static void updatePet() {
-       System.out.println("The updatePet() method has not been implemented yet");
+        int updateID;
+        String newName;
+        String oldName;
+        int newAge;
+        int oldAge;
+        
+        showAllPets();
+        System.out.print("Enter the pet ID you want to update: ");
+        updateID = s.nextInt();
+        System.out.print("Enter the new name and new age: ");
+        newName = s.next(); 
+        newAge = s.nextInt();
+        
+        oldName = pets[updateID].getName();
+        oldAge = pets[updateID].getAge();
+        pets[updateID].setName(newName);
+        pets[updateID].setAge(newAge);
+        
+        System.out.println(oldName + " " + oldAge + " changed to " + newName + " " + newAge + "\n");
     }
     
     private static void removePet() {
-       System.out.println("The removePet() method has not been implemented yet");
+        int removeID;
+        String petName;
+        int petAge;
+        Pet[] tempPets = new Pet[petCount];
+        
+        showAllPets();
+        System.out.print("Enter the pet ID to remove: ");
+        removeID = s.nextInt();
+        
+        petName = pets[removeID].getName();
+        petAge = pets[removeID].getAge();
+        
+        for (int x=0; x < removeID; x++) { // Copy first half of array up to but not
+            tempPets[x] = pets[x];         // including the element we want to remove
+        }
+        
+        for (int x = removeID; x < petCount; x++) { // Copy remainder of array
+            tempPets[x] = pets[x + 1];
+        }
+               
+        for (int x=0; x < tempPets.length; x++) { // Copy temp array back over to global DB
+            pets[x] = tempPets[x];
+        }
+
+        petCount--;                         // Decrement pet count since we just removed one
+        System.out.println(petName + " " + petAge + " is removed.\n");
     }
     
     private static void searchPetsByName() {
