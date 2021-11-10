@@ -1,6 +1,12 @@
 package petdatabase;
 
-public class Pet {
+// Cole Dietsch
+
+import java.io.Serializable;
+
+// This file contains the Pet class for the PetDatabase
+
+public class Pet implements Serializable {
 
     private String name;
     private int age;
