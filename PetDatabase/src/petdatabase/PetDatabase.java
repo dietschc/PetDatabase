@@ -55,11 +55,8 @@ public class PetDatabase implements Serializable {
             switch (getUserChoice()) {
                 case 1 -> showAllPets();
                 case 2 -> addPets();
-                case 3 -> updatePet();
-                case 4 -> removePet();
-                case 5 -> searchPetsByName();
-                    case 6 -> searchPetsByAge();
-                case 7 -> doLoop = false;
+                case 3 -> removePet();
+                case 4 -> doLoop = false;
                 default -> System.out.println("Please enter a valid menu option");
             }
         }
@@ -72,12 +69,9 @@ public class PetDatabase implements Serializable {
         System.out.print("""
                     What would you like to do?
                      1) View all pets
-                     2) Add more pets
-                     3) Update an existing pet
-                     4) Remove an existing pet
-                     5) Search pets by name 
-                     6) Search pets by age 
-                     7) Exit program 
+                     2) Add new pets
+                     3) Remove a pet
+                     4) Exit program 
                    """); 
         System.out.print("Your choice: ");
         choice = s.nextInt();
