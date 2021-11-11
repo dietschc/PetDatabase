@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class PetDatabase implements Serializable {
     
     // We will create a database that allows for 5 rows
-    static Pet[] pets;
+    static Pet[] pets = new Pet[5];
     static int petCount = 0;
     static boolean loadedFromFile = false;
     
@@ -27,10 +27,14 @@ public class PetDatabase implements Serializable {
         try {
             pets = loadPets("myPets.db");
             
-            // Set pet count here as it is used by the methods as an index for the array
-            // set pet count is done in removeNullValuesFromPets()
+            // The following method removes null records and sets the pet counter to the correct value
             removeNullValuesFromPets();
             loadedFromFile = true;
+            
+            // Debug what was loaded
+//            for (int i=0; i < pets.length; i++) {
+//                System.out.println("Value: " + pets[i]);
+//            }
         } catch (FileNotFoundException e) {
             System.out.println("Pet database not found");
         } catch (Exception e) {
@@ -54,8 +58,9 @@ public class PetDatabase implements Serializable {
                 case 3 -> updatePet();
                 case 4 -> removePet();
                 case 5 -> searchPetsByName();
-                case 6 -> searchPetsByAge();
+                    case 6 -> searchPetsByAge();
                 case 7 -> doLoop = false;
+                default -> System.out.println("Please enter a valid menu option");
             }
         }
         savePets(pets);
@@ -76,28 +81,55 @@ public class PetDatabase implements Serializable {
                    """); 
         System.out.print("Your choice: ");
         choice = s.nextInt();
+        
         return choice;
     }
-    
+     
     private static void addPets() {
         String petName;
-        int petAge;
+        int petAge = 0;
         boolean notDone = true;
         int petCounter = 0;
+        String inputString;
+        Scanner s = new Scanner(System.in);
         
         while (notDone) {
+            if (petCount == 5) {
+                System.out.println("Warning, there are already 5 pets in the database!");
+                System.out.println("Please come back and add more after you have removed a pet from the options menu");
+                notDone = false;
+                break;
+            }
+            
             System.out.print("add pet (name, age): ");
-            petName = s.next();          
+            
+            // Read both values in at once and split them after
+            inputString = s.nextLine();
+            String[] inputArray = inputString.split(" ");
+            
+            petName = inputArray[0];
+            
             if (petName.equalsIgnoreCase("done")) {
                 notDone = false;
                 break;
-            }           
-            petAge = s.nextInt();
+            }
             
-            pets[petCount] = new Pet(petName, petAge); // Add pet to database
-            petCounter++;
-            petCount++;
-        }
+            // We have the correct input if there are two list items
+            if (inputArray.length == 2) {
+                petAge = Integer.parseInt(inputArray[1]);
+
+                if (petAge > 1 && petAge <= 20) {
+                    pets[petCount] = new Pet(petName, petAge); // Add pet to database
+                    petCounter++;
+                    petCount++;
+                } else {
+                    System.out.println("Pet age must be between 1 and 20");
+                }
+            } else {
+                System.out.println("Error " + inputString + " is not valid input.");
+            }
+            
+        } // end while loop
         System.out.println(petCounter + " pets added.\n");
     }
     
@@ -112,51 +144,75 @@ public class PetDatabase implements Serializable {
     private static void updatePet() {
         int updateID;
         String newName;
-        String oldName;
+        String oldName = "";
         int newAge;
-        int oldAge;
+        int oldAge = 0;
         
         showAllPets();
         System.out.print("Enter the pet ID you want to update: ");
         updateID = s.nextInt();
+        
+        // Reject bad input
+        if (updateID < 0 || updateID > pets.length || pets[updateID] == null) {
+            System.out.println("Please enter a valid pet id");
+            return;
+        }
+        
         System.out.print("Enter the new name and new age: ");
         newName = s.next(); 
         newAge = s.nextInt();
-        
         oldName = pets[updateID].getName();
         oldAge = pets[updateID].getAge();
-        pets[updateID].setName(newName);
-        pets[updateID].setAge(newAge);
         
-        System.out.println(oldName + " " + oldAge + " changed to " + newName + " " + newAge + "\n");
+        if (newAge > 1 && newAge <= 20) {
+            pets[updateID].setName(newName);
+            pets[updateID].setAge(newAge);
+            System.out.println(oldName + " " + oldAge + " changed to " + newName + " " + newAge + "\n");
+        } else {
+            System.out.println("Pet age must be between 1 and 20");
+        }
+        
     }
     
     private static void removePet() {
         int removeID;
         String petName;
         int petAge;
-        Pet[] tempPets = new Pet[petCount];
+        Pet[] tempPets = new Pet[pets.length - 1];
         
         showAllPets();
         System.out.print("Enter the pet ID to remove: ");
         removeID = s.nextInt();
         
+        if (removeID < 0 || removeID > pets.length || pets[removeID] == null) {
+            System.out.println("Please enter a valid pet id");
+            return;
+        }
+        
         petName = pets[removeID].getName();
         petAge = pets[removeID].getAge();
         
-        for (int x=0; x < removeID; x++) { // Copy first half of array up to but not
-            tempPets[x] = pets[x];         // including the element we want to remove
+        // Use 2 array method to create a copy without unwanted index
+        for (int x=0, y=0; x < pets.length; x++) {
+            if (x != removeID) {
+                tempPets[y++] = pets[x];
+            }
         }
         
-        for (int x = removeID; x < petCount; x++) { // Copy remainder of array
-            tempPets[x] = pets[x + 1];
-        }
-               
+        // Creat a fresh array for pets 
+        pets = new Pet[5];
+        
         for (int x=0; x < tempPets.length; x++) { // Copy temp array back over to global DB
             pets[x] = tempPets[x];
         }
 
         petCount--;                         // Decrement pet count since we just removed one
+        
+        // Debug
+//        for (int i=0; i < pets.length; i++) {
+//            System.out.println("Value: " + pets[i]);
+//        }
+
         System.out.println(petName + " " + petAge + " is removed.\n");
     }
     
